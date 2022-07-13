@@ -2,6 +2,11 @@ import logging
 import sys
 import time
 from http import HTTPStatus
+try:
+    from simplejson.errors import JSONDecodeError
+except ImportError:
+    from json.decoder import JSONDecodeError
+
 
 from constants import (
     ENDPOINT, HEADERS, HOMEWORK_STATUSES, PRACTICUM_TOKEN, RETRY_TIME,
@@ -27,7 +32,6 @@ def send_message(bot, message):
         logging.info(msg)
     except TelegramError as error:
         msg = f'Сбой при отправке сообщения: {error}'
-        logging.error(msg)
         raise SendMessageFailure(msg)
 
 
@@ -40,7 +44,7 @@ def get_api_answer(current_timestamp):
             ENDPOINT, headers=HEADERS, params=params,
         )
         if homework_statuses.status_code != HTTPStatus.OK:
-            message = f'Статус код ответа на запрос к "{ENDPOINT}" равен '
+            message = f'Статус код ответа на запрос к "{ENDPOINT}" равен'
             f'{homework_statuses.status_code}.'
             logging.error(message)
             raise WrongGetApiStatus(message)
@@ -48,8 +52,11 @@ def get_api_answer(current_timestamp):
         message = f'Сбой в работе API сервиса: {error}'
         logging.error(message)
         raise GetApiError(message)
-    response = homework_statuses.json()
-    return response
+    try:
+        response = homework_statuses.json()
+        return response
+    except JSONDecodeError:
+        print("N'est pas JSON")
 
 
 def check_response(response):
@@ -77,11 +84,11 @@ def parse_status(homework):
     """Возвращает информацию об изменении статуса домашней работы."""
     homework_name = homework.get('homework_name')
     homework_status = homework.get('status')
-    if homework_name is None:
+    if 'homework_name' not in homework:
         message = 'Не найдено имя домашней работы в ответе API.'
         logging.error(message)
         raise KeyError(message)
-    if homework_status is None:
+    if 'status' not in homework:
         message = 'Не найден статус домашней работы в ответе API.'
         logging.error(message)
         raise KeyError(message)
