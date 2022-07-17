@@ -1,7 +1,7 @@
 class GetApiError(Exception):
     """Ошибка доступа к сервису API ENDPOINT."""
     pass
-
+#Можно ничего не менять
 
 class IncorrectApiAnswer(Exception):
     """Получен некорректный ответ сервиса API ENDPOINT."""
