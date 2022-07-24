@@ -32,7 +32,7 @@ def send_message(bot, message):
         logging.info(msg)
     except TelegramError as error:
         msg = f'Сбой при отправке сообщения: {error}'
-        raise SendMessageFailure(msg) #Эту строчку нужно удалить
+        raise SendMessageFailure(msg)
 
 
 def get_api_answer(current_timestamp):
@@ -156,4 +156,5 @@ if __name__ == '__main__':
         handlers=[logging.StreamHandler(stream=sys.stdout)],
     )
     main()
+    #это конец программы
 
