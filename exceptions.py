@@ -25,3 +25,8 @@ class WrongGetApiStatus(Exception):
 class EmptyResponse(Exception):
     """Отсутствуют данные в ответе от сервера."""
     pass
+
+
+class JsonError(Exception):
+    """Ошибка с JSON."""
+    pass

@@ -14,7 +14,7 @@ from constants import (
 )
 
 from exceptions import (
-    EmptyResponse, GetApiError, IncorrectApiAnswer, NoHomeworkInfo,
+    EmptyResponse, GetApiError, IncorrectApiAnswer, JsonError, NoHomeworkInfo,
     SendMessageFailure, WrongGetApiStatus,
 )
 
@@ -59,7 +59,7 @@ def get_api_answer(current_timestamp):
         return response
     except JSONDecodeError:
         jsn_message = 'Ошибка с JSON'
-        logger.error(jsn_message)
+        raise JsonError(jsn_message)
 
 
 def check_response(response):
@@ -95,7 +95,6 @@ def parse_status(homework):
     verdict = HOMEWORK_STATUSES.get(homework_status)
     if verdict is None:
         message = 'Недокументированный статус домашней работы в ответе API.'
-        logger.error(message)
         raise KeyError(message)
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
